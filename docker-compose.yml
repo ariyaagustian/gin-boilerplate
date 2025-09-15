@@ -1,0 +1,55 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    container_name: gin_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: appdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d appdb"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gin_app
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # App
+      APP_PORT: 8081
+      # DB (host = nama service "db" di compose)
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: appdb
+      DB_SSLMODE: disable
+      # (opsional) override TZ runtime
+      TZ: Asia/Jakarta
+      JWT_SECRET: "supersecret_min32chars"
+      JWT_ACCESS_TTL: "15m"
+      ADMIN_EMAIL: "admin@example.com"
+    ports:
+      - "8081:8081"
+    # Untuk dev lokal tanpa hot reload:
+    # - jalankan `go run ./cmd/server` di host, atau
+    # - rebuild image tiap ada perubahan kode:
+    # volumes:
+    #   - .:/app   # <- Jika diaktifkan, pastikan binary di-build di container.
+
+volumes:
+  pgdata:
