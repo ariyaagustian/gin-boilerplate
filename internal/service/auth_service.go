@@ -11,10 +11,10 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 
-	"github.com/ariyaagustian/gin-crud-boilerplate/internal/domain"
-	"github.com/ariyaagustian/gin-crud-boilerplate/internal/repository"
-	"github.com/ariyaagustian/gin-crud-boilerplate/pkg/apperr"
-	"github.com/ariyaagustian/gin-crud-boilerplate/pkg/auth"
+	"github.com/ariyaagustian/gin-boilerplate/internal/domain"
+	"github.com/ariyaagustian/gin-boilerplate/internal/repository"
+	"github.com/ariyaagustian/gin-boilerplate/pkg/apperr"
+	"github.com/ariyaagustian/gin-boilerplate/pkg/auth"
 )
 
 type AuthService interface {

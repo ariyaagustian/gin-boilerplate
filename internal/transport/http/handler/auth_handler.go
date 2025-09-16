@@ -3,9 +3,9 @@ package handler
 import (
 	"net/http"
 
-	"github.com/ariyaagustian/gin-crud-boilerplate/internal/service"
-	"github.com/ariyaagustian/gin-crud-boilerplate/pkg/apperr"
-	"github.com/ariyaagustian/gin-crud-boilerplate/pkg/response"
+	"github.com/ariyaagustian/gin-boilerplate/internal/service"
+	"github.com/ariyaagustian/gin-boilerplate/pkg/apperr"
+	"github.com/ariyaagustian/gin-boilerplate/pkg/response"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -14,6 +14,15 @@ type AuthHandler struct{ svc service.AuthService }
 
 func NewAuthHandler(s service.AuthService) *AuthHandler { return &AuthHandler{svc: s} }
 
+// Register godoc
+// @Summary     Register user baru
+// @Tags        auth
+// @Accept      json
+// @Produce     json
+// @Param       payload body     dto.RegisterReq  true "Register payload"
+// @Success     201     {object} dto.RegisterResp
+// @Failure     400     {object} apperr.AppError
+// @Router      /auth/register [post]
 func (h *AuthHandler) Register(c *gin.Context) {
 	var in struct {
 		Name     string `json:"name"`
@@ -32,6 +41,15 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"user": u, "token": tok, "token_type": "Bearer"})
 }
 
+// Login godoc
+// @Summary      Login dan dapatkan token
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        payload body     dto.LoginReq true "Login payload"
+// @Success      200     {object} dto.TokenResp
+// @Failure      401     {object} apperr.AppError
+// @Router       /auth/login [post]
 func (h *AuthHandler) Login(c *gin.Context) {
 	var in struct {
 		Email    string `json:"email"`
@@ -49,6 +67,14 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"user": u, "token": tok, "token_type": "Bearer"})
 }
 
+// Me godoc
+// @Summary      Get current user profile
+// @Tags         user
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200 {object} domain.User
+// @Failure      401 {object} apperr.AppError
+// @Router       /api/v1/users/me [get]
 func (h *UserHandler) Me(c *gin.Context) {
 	uid, ok := c.Get("user_id")
 	if !ok {
@@ -64,6 +90,16 @@ func (h *UserHandler) Me(c *gin.Context) {
 	response.JSON(c, http.StatusOK, out)
 }
 
+// AdminSetPassword godoc
+// @Summary      Set password user (admin only)
+// @Tags         admin
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        payload body     map[string]string true "email, new_password"
+// @Success      200     {object} map[string]string
+// @Failure      403     {object} apperr.AppError
+// @Router       /api/v1/admin/users/set-password [post]
 func (h *AuthHandler) AdminSetPassword(c *gin.Context) {
 	var in struct {
 		UserID   string `json:"user_id"`

@@ -10,10 +10,10 @@ import (
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 
-	"github.com/ariyaagustian/gin-crud-boilerplate/internal/domain"
-	"github.com/ariyaagustian/gin-crud-boilerplate/internal/repository"
-	"github.com/ariyaagustian/gin-crud-boilerplate/pkg/apperr"
-	"github.com/ariyaagustian/gin-crud-boilerplate/pkg/validation"
+	"github.com/ariyaagustian/gin-boilerplate/internal/domain"
+	"github.com/ariyaagustian/gin-boilerplate/internal/repository"
+	"github.com/ariyaagustian/gin-boilerplate/pkg/apperr"
+	"github.com/ariyaagustian/gin-boilerplate/pkg/validation"
 )
 
 const MaxPageSize = 100

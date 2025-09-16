@@ -6,15 +6,26 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/ariyaagustian/gin-crud-boilerplate/internal/service"
-	"github.com/ariyaagustian/gin-crud-boilerplate/pkg/apperr"
-	"github.com/ariyaagustian/gin-crud-boilerplate/pkg/response"
+	"github.com/ariyaagustian/gin-boilerplate/internal/service"
+	"github.com/ariyaagustian/gin-boilerplate/pkg/apperr"
+	"github.com/ariyaagustian/gin-boilerplate/pkg/response"
 )
 
 type UserHandler struct{ svc service.UserService }
 
 func NewUserHandler(s service.UserService) *UserHandler { return &UserHandler{svc: s} }
 
+// Create godoc
+// @Summary      Create user
+// @Tags         users
+// @Security     BearerAuth
+// @Accept       json
+// @Produce      json
+// @Param        payload body     dto.CreateUserReq true "User payload"
+// @Success      201     {object} domain.User
+// @Failure      400     {object} apperr.AppError
+// @Failure      401     {object} apperr.AppError
+// @Router       /api/v1/users [post]
 func (h *UserHandler) Create(c *gin.Context) {
 	var in struct {
 		Name  string `json:"name"`
@@ -32,6 +43,16 @@ func (h *UserHandler) Create(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"data": out})
 }
 
+// List godoc
+// @Summary      List users
+// @Tags         users
+// @Security     BearerAuth
+// @Produce      json
+// @Param        page   query    int false "page"   example(1)
+// @Param        limit  query    int false "limit"  example(20)
+// @Success      200    {array}  dto.ListUsersResp
+// @Failure      401    {object} apperr.AppError
+// @Router       /api/v1/users [get]
 func (h *UserHandler) List(c *gin.Context) {
 	// Ambil query params → siapkan default
 	p := service.ListUsersParams{
@@ -59,6 +80,15 @@ func (h *UserHandler) List(c *gin.Context) {
 	response.JSON(c, http.StatusOK, out)
 }
 
+// Get godoc
+// @Summary      Get user by ID
+// @Tags         users
+// @Security     BearerAuth
+// @Produce      json
+// @Param        id path string true "User ID (UUID)" format(uuid)
+// @Success      200 {object} domain.User
+// @Failure      404 {object} apperr.AppError
+// @Router       /api/v1/users/{id} [get]
 func (h *UserHandler) Get(c *gin.Context) {
 	id := c.Param("id")
 	out, err := h.svc.Get(c.Request.Context(), id)
@@ -69,6 +99,17 @@ func (h *UserHandler) Get(c *gin.Context) {
 	response.JSON(c, http.StatusOK, out)
 }
 
+// Update godoc
+// @Summary      Update user
+// @Tags         users
+// @Security     BearerAuth
+// @Accept       json
+// @Produce      json
+// @Param        id      path string       true "User ID (UUID)" format(uuid)
+// @Param        payload body dto.UpdateUserReq true "Update payload"
+// @Success      200     {object} domain.User
+// @Failure      400     {object} apperr.AppError
+// @Router       /api/v1/users/{id} [put]
 func (h *UserHandler) Update(c *gin.Context) {
 	id := c.Param("id")
 	var in struct {
@@ -87,6 +128,15 @@ func (h *UserHandler) Update(c *gin.Context) {
 	response.JSON(c, http.StatusOK, out)
 }
 
+// Delete godoc
+// @Summary      Delete user
+// @Tags         users
+// @Security     BearerAuth
+// @Produce      json
+// @Param        id path string true "User ID (UUID)" format(uuid)
+// @Success      204 {string} string "no content"
+// @Failure      404 {object} apperr.AppError
+// @Router       /api/v1/users/{id} [delete]
 func (h *UserHandler) Delete(c *gin.Context) {
 	id := c.Param("id")
 	if err := h.svc.Delete(c.Request.Context(), id); err != nil {

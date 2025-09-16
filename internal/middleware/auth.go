@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 
-	"github.com/ariyaagustian/gin-crud-boilerplate/pkg/auth"
+	"github.com/ariyaagustian/gin-boilerplate/pkg/auth"
 )
 
 func AuthBearer(jwtSecret string) gin.HandlerFunc {

@@ -3,7 +3,7 @@ package response
 import (
 	"net/http"
 
-	"github.com/ariyaagustian/gin-crud-boilerplate/pkg/apperr"
+	"github.com/ariyaagustian/gin-boilerplate/pkg/apperr"
 	"github.com/gin-gonic/gin"
 )
 

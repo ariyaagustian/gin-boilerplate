@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 
-	"github.com/ariyaagustian/gin-crud-boilerplate/internal/domain"
+	"github.com/ariyaagustian/gin-boilerplate/internal/domain"
 )
 
 type UserRepository interface {
@@ -75,8 +75,9 @@ func scopeSearch(q string) func(*gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		if s := strings.TrimSpace(q); s != "" {
 			like := "%" + s + "%"
-			// Postgres: ILIKE (case-insensitive); MySQL tetap LIKE (case-insensitive tergantung collation)
-			return db.Where(`name ILIKE ? OR email ILIKE ?`, like, like)
+			// Use database-agnostic case-insensitive search
+			// GORM will handle the appropriate SQL syntax for different databases
+			return db.Where("LOWER(name) LIKE LOWER(?) OR LOWER(email) LIKE LOWER(?)", like, like)
 		}
 		return db
 	}
@@ -84,14 +85,22 @@ func scopeSearch(q string) func(*gorm.DB) *gorm.DB {
 
 func scopeSort(sortBy, sortDir string) func(*gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
-		// whitelist kolom
-		if _, ok := allowedSort[sortBy]; !ok || sortBy == "" {
+		// Validate and sanitize sort column
+		if sortBy == "" {
 			sortBy = "created_at"
 		}
+
+		// Use strict whitelist validation to prevent SQL injection
+		if _, ok := allowedSort[sortBy]; !ok {
+			sortBy = "created_at"
+		}
+
+		// Validate sort direction
 		desc := true
 		if strings.EqualFold(sortDir, "asc") {
 			desc = false
 		}
+
 		return db.Order(clause.OrderByColumn{
 			Column: clause.Column{Name: sortBy},
 			Desc:   desc,
